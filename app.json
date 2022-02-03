@@ -1,5 +1,5 @@
 {
-      "name": "Yansen Robot",
+      "name": "SkyFox Robot",
       "description": "A Powerful  Telegram group management bot with anime theme.",
       "keywords": [
          "telegram",
@@ -9,8 +9,8 @@
          "naorobot"
       ],
     
-   "logo":    "https://telegra.ph/file/c46b5dfde1e95777965ac.jpg",  
-   "repository": "https://github.com/Yansensad/https://github.com/Yansensad/YansenRobot",
+   "logo":    "https://telegra.ph/file/281fbf2e19c36b34d4f40.jpg",  
+   "repository": "https://github.com/Yansensad/https://github.com/arkadiaz/SkyFox-Robot",
    "addons": [
           {
          "options": {
