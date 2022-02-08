@@ -41,7 +41,7 @@ from telegram.error import (
     ChatMigrated,
     NetworkError,
     TelegramError,
-    TimedOut, 
+    TimedOut,
     Unauthorized,
 )
 from telegram.ext import (
@@ -82,36 +82,39 @@ def get_readable_time(seconds: int) -> str:
 
 PM_START_TEXT = """
 *Hello {} !*
-✪ I'm an anime-theme management bot [✨](https://telegra.ph/file/281fbf2e19c36b34d4f40.jpg)
 ────────────────────────
-× *Uptime:* `{}`
-× `{}` *users, across* `{}` *chats.*
+✪ I'm an anime theme bot designed to help manage your telegram group with a lot features.
+✪ Maintained by @laz1yy ✨
 ────────────────────────
-✪ Hit /help to see my available commands.
+Hit the /help to see available command.
 """
 
 buttons = [
     [
-        InlineKeyboardButton(text="About SkyFox Robot", callback_data="SkyFox_"),
+        InlineKeyboardButton(text="ʜᴇʟᴘ & ᴄᴏᴍᴍᴀɴᴅ​", callback_data="help_back"),
     ],
     [
-        InlineKeyboardButton(text="Get Help", callback_data="help_back"),
+        InlineKeyboardButton(text="ᴀʙᴏᴜᴛ", callback_data="SkyFox_"),
+        InlineKeyboardButton(text="ᴛʀʏ ɪɴʟɪɴᴇ​", switch_inline_query_current_chat=""),
+    ],
+    [
         InlineKeyboardButton(
-            text="Try inline!​​", switch_inline_query_current_chat=""
+            text="sᴏᴜʀᴄᴇ ᴄᴏᴅᴇ​", url="https://github.com/arkadiaz/SkyFox-Robot"
+        ),
+        InlineKeyboardButton(text="sᴜᴘᴘᴏʀᴛ​", url=f"https://t.me/{SUPPORT_CHAT}"),
+    ],
+    [
+        InlineKeyboardButton(
+            text="➗ ᴀᴅᴅ ᴍᴇ ᴛᴏ ʏᴏᴜʀ ɢʀᴏᴜᴘ​ ➗",
+            url=f"t.me/{dispatcher.bot.username}?startgroup=new",
         ),
     ],
-    [
-        InlineKeyboardButton(
-            text="➗ Add SkyFox To Your Group ➗", url="t.me/SkyFoxyBot?startgroup=new"),
-    ],
 ]
-
 
 HELP_STRINGS = """
 Click on the button bellow to get description about specifics command."""
 
 EMI_IMG = "https://telegra.ph/file/281fbf2e19c36b34d4f40.jpg"
-
 
 DONATE_STRING = """Heya, glad to hear you want to donate!
  You can support the project by contacting @laz1yy \
@@ -199,7 +202,13 @@ def start(update: Update, context: CallbackContext):
                     update.effective_chat.id,
                     HELPABLE[mod].__help__,
                     InlineKeyboardMarkup(
-                        [[InlineKeyboardButton(text="Go Back", callback_data="help_back")]]
+                        [
+                            [
+                                InlineKeyboardButton(
+                                    text="Go Back", callback_data="help_back"
+                                )
+                            ]
+                        ]
                     ),
                 )
 
@@ -222,17 +231,18 @@ def start(update: Update, context: CallbackContext):
                     escape_markdown(first_name),
                     escape_markdown(uptime),
                     sql.num_users(),
-                    sql.num_chats()),                        
+                    sql.num_chats(),
+                ),
                 reply_markup=InlineKeyboardMarkup(buttons),
                 parse_mode=ParseMode.MARKDOWN,
                 timeout=60,
-                disable_web_page_preview=False,
+                disable_web_page_preview=True,
             )
     else:
         update.effective_message.reply_text(
-            f"👋 Hi, I'm {dispatcher.bot.first_name}. Nice to meet You.",
-            parse_mode=ParseMode.HTML
-       )
+            f"<b>Hi I'm SkyFox robot!</b>\n<b>Started working since:</b> <code>{uptime}</code>",
+            parse_mode=ParseMode.HTML,
+        )
 
 
 def error_handler(update, context):
@@ -374,20 +384,32 @@ def SkyFox_about_callback(update, context):
             disable_web_page_preview=True,
             reply_markup=InlineKeyboardMarkup(
                 [
-                 [
-                    InlineKeyboardButton(text="Admins", callback_data="SkyFox_admin"),
-                    InlineKeyboardButton(text="Notes", callback_data="SkyFox_notes"),
-                 ],
-                 [
-                    InlineKeyboardButton(text="Support", callback_data="SkyFox_support"),
-                    InlineKeyboardButton(text="Credits", callback_data="SkyFox_credit"),
-                 ],
-                 [
-                    InlineKeyboardButton(text="Source Code", url="https://github.com/Arkadiaz/SkyFox-Robot"),
-                 ],
-                 [
-                    InlineKeyboardButton(text="Go Back", callback_data="SkyFox_back"),
-                 ]
+                    [
+                        InlineKeyboardButton(
+                            text="ᴀᴅᴍɪɴs​", callback_data="SkyFox_admin"
+                        ),
+                        InlineKeyboardButton(
+                            text="ɴᴏᴛᴇs​", callback_data="SkyFox_notes"
+                        ),
+                    ],
+                    [
+                        InlineKeyboardButton(
+                            text="sᴜᴘᴘᴏʀᴛ​", callback_data="SkyFox_support"
+                        ),
+                        InlineKeyboardButton(
+                            text="ᴄʀᴇᴅɪᴛs​", callback_data="SkyFox_credit"
+                        ),
+                    ],
+                    [
+                        InlineKeyboardButton(
+                            text="ᴍᴜsɪᴄᴘʟᴀʏᴇʀ​", callback_data="source_"
+                        ),
+                    ],
+                    [
+                        InlineKeyboardButton(
+                            text="ɢᴏ ʙᴀᴄᴋ​", callback_data="SkyFox_back"
+                        ),
+                    ],
                 ]
             ),
         )
@@ -395,21 +417,22 @@ def SkyFox_about_callback(update, context):
         first_name = update.effective_user.first_name
         uptime = get_readable_time((time.time() - StartTime))
         query.message.edit_text(
-                PM_START_TEXT.format(
-                    escape_markdown(first_name),
-                    escape_markdown(uptime),
-                    sql.num_users(),
-                    sql.num_chats()),
-                reply_markup=InlineKeyboardMarkup(buttons),
-                parse_mode=ParseMode.MARKDOWN,
-                timeout=60,
-                disable_web_page_preview=False,
+            PM_START_TEXT.format(
+                escape_markdown(first_name),
+                escape_markdown(uptime),
+                sql.num_users(),
+                sql.num_chats(),
+            ),
+            reply_markup=InlineKeyboardMarkup(buttons),
+            parse_mode=ParseMode.MARKDOWN,
+            timeout=60,
+            disable_web_page_preview=True,
         )
 
     elif query.data == "SkyFox_admin":
         query.message.edit_text(
             text=f"*๏ Let's make your group bit effective now*"
-            "\nCongragulations, SkyFox Robot now ready to manage your group."
+            f"\nCongragulations, {dispatcher.bot.first_name} now ready to manage your group."
             "\n\n*Admin Tools*"
             "\nBasic Admin tools help you to protect and powerup your group."
             "\nYou can ban members, Kick members, Promote someone as admin through commands of bot."
@@ -419,7 +442,7 @@ def SkyFox_about_callback(update, context):
             parse_mode=ParseMode.MARKDOWN,
             disable_web_page_preview=True,
             reply_markup=InlineKeyboardMarkup(
-                [[InlineKeyboardButton(text="Go Back", callback_data="SkyFox_")]]
+                [[InlineKeyboardButton(text="ɢᴏ ʙᴀᴄᴋ​", callback_data="SkyFox_")]]
             ),
         )
 
@@ -431,62 +454,46 @@ def SkyFox_about_callback(update, context):
             f"\n\nYou can also set buttons for notes and filters (refer help menu)",
             parse_mode=ParseMode.HTML,
             reply_markup=InlineKeyboardMarkup(
-                [[InlineKeyboardButton(text="Go Back", callback_data="SkyFox_")]]
+                [[InlineKeyboardButton(text="ɢᴏ ʙᴀᴄᴋ​", callback_data="SkyFox_")]]
             ),
         )
     elif query.data == "SkyFox_support":
         query.message.edit_text(
-            text="*๏ SkyFox support chats*"
+            text=f"*๏ {dispatcher.bot.first_name} support chats*"
             "\nJoin My Support Group/Channel for see or report a problem on SkyFox.",
             parse_mode=ParseMode.MARKDOWN,
             reply_markup=InlineKeyboardMarkup(
                 [
-                 [
-                    InlineKeyboardButton(text="Support", url="t.me/arkabotsupport"),
-                    InlineKeyboardButton(text="Updates", url="https://t.me/arkabotupdate"),
-                 ],
-                 [
-                    InlineKeyboardButton(text="Go Back", callback_data="SkyFox_"),
-                 
-                 ]
+                    [
+                        InlineKeyboardButton(text="sᴜᴘᴘᴏʀᴛ​", url="t.me/arkabotsupport"),
+                        InlineKeyboardButton(
+                            text="ᴜᴘᴅᴀᴛᴇs​", url="https://t.me/arkabotupdate"
+                        ),
+                    ],
+                    [
+                        InlineKeyboardButton(text="ɢᴏ ʙᴀᴄᴋ​", callback_data="SkyFox_"),
+                    ],
                 ]
             ),
         )
-
 
     elif query.data == "SkyFox_credit":
         query.message.edit_text(
-            text=f"๏ Credis for SkyFox Robot\n"
-            "\nHere Developers Making And Give Inspiration For Made The SkyFox Robot",
-            parse_mode=ParseMode.MARKDOWN,
+            text=f"<b>๏ Credis for SkyFox</b>\n"
+            f"\nHere Developers Making The SkyFoxRobot",
+            parse_mode=ParseMode.HTML,
             reply_markup=InlineKeyboardMarkup(
                 [
-                 [
-                    InlineKeyboardButton(text="sena-ex", url="https://github.com/kennedy-ex"),
-                    InlineKeyboardButton(text="TheHamkerCat", url="https://github.com/TheHamkerCat"),
-                 ],
-                 [
-                    InlineKeyboardButton(text="Feri", url="https://github.com/FeriEXP"),
-                    InlineKeyboardButton(text="riz-ex", url="https://github.com/riz-ex"),
-                 ],
-                 [
-                    InlineKeyboardButton(text="Anime Kaizoku", url="https://github.com/animekaizoku"),
-                    InlineKeyboardButton(text="TheGhost Hunter", url="https://github.com/HuntingBots"),
-                 ],
-                 [
-                    InlineKeyboardButton(text="Inuka Asith", url="https://github.com/inukaasith"),
-                    InlineKeyboardButton(text="Noob-Kittu", url="https://github.com/noob-kittu"),
-                 ],
-                 [
-                    InlineKeyboardButton(text="Queen Arzoo", url="https://github.com/QueenArzoo"),
-                    InlineKeyboardButton(text="Paul Larsen", url="https://github.com/PaulSonOfLars"),
-                 ],
-                 [
-                    InlineKeyboardButton(text="Go Back", callback_data="SkyFox_"),
-                 ]
+                    [
+                        InlineKeyboardButton(text="Arka", url="t.me/laz1yy"),
+                    ],
+                    [
+                        InlineKeyboardButton(text="ɢᴏ ʙᴀᴄᴋ​", callback_data="SkyFox_"),
+                    ],
                 ]
             ),
         )
+
 
 def Source_about_callback(update, context):
     query = update.callback_query
@@ -506,26 +513,24 @@ def Source_about_callback(update, context):
             parse_mode=ParseMode.MARKDOWN,
             disable_web_page_preview=True,
             reply_markup=InlineKeyboardMarkup(
-                [
-                 [
-                    InlineKeyboardButton(text="Go Back", callback_data="SkyFox_")
-                 ]
-                ]
+                [[InlineKeyboardButton(text="ɢᴏ ʙᴀᴄᴋ​", callback_data="SkyFox_")]]
             ),
         )
     elif query.data == "source_back":
         first_name = update.effective_user.first_name
         query.message.edit_text(
-                PM_START_TEXT.format(
-                    escape_markdown(first_name),
-                    escape_markdown(uptime),
-                    sql.num_users(),
-                    sql.num_chats()),
-                reply_markup=InlineKeyboardMarkup(buttons),
-                parse_mode=ParseMode.MARKDOWN,
-                timeout=60,
-                disable_web_page_preview=False,
+            PM_START_TEXT.format(
+                escape_markdown(first_name),
+                escape_markdown(uptime),
+                sql.num_users(),
+                sql.num_chats(),
+            ),
+            reply_markup=InlineKeyboardMarkup(buttons),
+            parse_mode=ParseMode.MARKDOWN,
+            timeout=60,
+            disable_web_page_preview=True,
         )
+
 
 def get_help(update: Update, context: CallbackContext):
     chat = update.effective_chat  # type: Optional[Chat]
@@ -557,7 +562,7 @@ def get_help(update: Update, context: CallbackContext):
                 [
                     [
                         InlineKeyboardButton(
-                            text="Help",
+                            text="ʜᴇʟᴘ & ᴄᴏᴍᴍᴀɴᴅ​",
                             url="t.me/{}?start=help".format(context.bot.username),
                         )
                     ]
@@ -578,7 +583,7 @@ def get_help(update: Update, context: CallbackContext):
             chat.id,
             text,
             InlineKeyboardMarkup(
-                [[InlineKeyboardButton(text="Go Back", callback_data="help_back")]]
+                [[InlineKeyboardButton(text="ɢᴏ ʙᴀᴄᴋ​", callback_data="help_back")]]
             ),
         )
 
@@ -650,7 +655,7 @@ def settings_button(update: Update, context: CallbackContext):
                     [
                         [
                             InlineKeyboardButton(
-                                text="Go Back",
+                                text="ɢᴏ ʙᴀᴄᴋ​",
                                 callback_data="stngs_back({})".format(chat_id),
                             )
                         ]
@@ -725,7 +730,7 @@ def get_settings(update: Update, context: CallbackContext):
                     [
                         [
                             InlineKeyboardButton(
-                                text="Settings",
+                                text="sᴇᴛᴛɪɴɢs​",
                                 url="t.me/{}?start=stngs_{}".format(
                                     context.bot.username, chat.id
                                 ),
@@ -750,7 +755,7 @@ def donate(update: Update, context: CallbackContext):
             DONATE_STRING, parse_mode=ParseMode.MARKDOWN, disable_web_page_preview=True
         )
 
-        if OWNER_ID !=2004395661:
+        if OWNER_ID != 1606221784:
             update.effective_message.reply_text(
                 "I'm free for everyone ❤️ If you wanna make me smile, just join"
                 "[My Channel]({})".format(DONATION_LINK),
@@ -798,9 +803,12 @@ def main():
     if SUPPORT_CHAT is not None and isinstance(SUPPORT_CHAT, str):
         try:
             dispatcher.bot.sendMessage(
-                f"@{SUPPORT_CHAT}", 
-                "👋 Hi, i'm alive.",
-                parse_mode=ParseMode.MARKDOWN
+                f"@{SUPPORT_CHAT}",
+                f"""**SkyFox Robot Started!**
+
+**Python:** `{memek()}`
+**Telegram Library:** `v{peler}`""",
+                parse_mode=ParseMode.MARKDOWN,
             )
         except Unauthorized:
             LOGGER.warning(

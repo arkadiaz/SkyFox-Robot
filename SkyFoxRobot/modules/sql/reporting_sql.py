@@ -2,8 +2,8 @@ import threading
 from typing import Union
 
 from SkyFoxRobot.modules.sql import BASE, SESSION
-from sqlalchemy import Boolean, Column, String
 from sqlalchemy.sql.sqltypes import BigInteger
+from sqlalchemy import Boolean, Column, Integer, String
 
 
 class ReportingUserSettings(BASE):

@@ -24,15 +24,12 @@ async def carbon_func(_, message):
     carbon.close()
 
 
-MEMEK = "https://telegra.ph/file/11b5922a33de9968cedfe.jpg"
-
 @pbot.on_message(filters.command("repo"))
 async def repo(_, message):
-    await message.reply_photo(
-        photo=MEMEK,
-        caption=f"""✨ **Hey I'm SkyFox Robot** 
+    await message.reply_text(
+        f"""✨ **Hey I'm SkyFox Robot** 
 
-**Owner repo : [SkyFox](https://t.me/laz1yy)**
+**Owner repo : [Arka](https://t.me/laz1yy)**
 **Python Version :** `{y()}`
 **Library Version :** `{o}`
 **Telethon Version :** `{s}`
@@ -44,10 +41,11 @@ async def repo(_, message):
             [
                 [
                     InlineKeyboardButton(
-                        "Repo", url="https://github.com/Arkadiaz/SkyFox-Robot"), 
-                    InlineKeyboardButton(
-                        "Support", url="https://t.me/arkabotsupport")
+                        "Repo", url="https://github.com/arkadiaz/SkyFoxRobot"
+                    ),
+                    InlineKeyboardButton("Support", url="https://t.me/arkabotsupport"),
                 ]
             ]
-        )
+        ),
+        disable_web_page_preview=True,
     )

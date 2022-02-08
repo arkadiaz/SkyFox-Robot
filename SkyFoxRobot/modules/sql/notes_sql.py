@@ -3,7 +3,7 @@ import threading
 
 from SkyFoxRobot.modules.helper_funcs.msg_types import Types
 from SkyFoxRobot.modules.sql import BASE, SESSION
-from sqlalchemy import Boolean, Column, String, UnicodeText, distinct, func, Integer
+from sqlalchemy import Boolean, Column, Integer, String, UnicodeText, distinct, func
 
 
 class Notes(BASE):

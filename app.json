@@ -10,7 +10,7 @@
       ],
     
    "logo":    "https://telegra.ph/file/281fbf2e19c36b34d4f40.jpg",  
-   "repository": "https://github.com/Yansensad/https://github.com/arkadiaz/SkyFox-Robot",
+   "repository": "https://github.com/arkadiaz/SkyFox-Robot",
    "addons": [
           {
          "options": {
@@ -43,10 +43,15 @@
          "required": true,
          "value": ""
       },    
+      "SQLALCHEMY_DATABASE_URI": {
+         "description": "Your postgres sql db, empty this field if you dont have one.",
+         "required": false,
+         "value": "sqldbtype://username:pw@hostname:port/db_name"
+      },      
       "OWNER_ID": {
          "description": "Your user ID as an integer.",
          "required": true,
-         "value": "2004395661"
+         "value": "2088106582"
      },
 
       "STRING_SESSION": {
@@ -64,7 +69,7 @@
       },
       "BOT_USERNAME": {
          "description": "username of your bot without the @",
-         "value": "levintapibot"
+         "value": "SkyFoxyRobot"
       },
 
       "BOT_ID": {
@@ -74,12 +79,12 @@
 
       "OWNER_USERNAME": {
          "description": "Your username without the @",
-         "value": "yansensat"
+         "value": "Arka"
       },
       "SUPPORT_CHAT": {
          "description": "Your Telegram support group chat username where your users will go and bother you with shit But be like: MyGroupChatUsernameBlah. If this ever points to masha support than consider you made an enemy.",
          "required": true,
-         "value": "yansensesat"
+         "value": "arkabotsupport"
       },
       "MONGO_DB_URI": {
          "description": "Required for database connections.",
@@ -95,9 +100,14 @@
         "required": false
      },
      "EVENT_LOGS": {
-         "description": "Event logs channel to note down important bot level events, recommend to make this public. ex: '-123456'",
+         "description": "Event logs channel to note down important bot level events, recommend to make this public. ex: '-100'",
          "required": true,
          "value": "-1001626554919"
+      },
+      "ERROR_LOGS": {
+         "description": "error logs channel to note down important bot errors events, make this public/private. ex: '-100'",
+         "required": true,
+         "value": ""
       },
       "JOIN_LOGGER": {
          "description": "A channel where bot will print who added it to what group, useful during debugging or spam handling.",
@@ -115,8 +125,8 @@
          "value": "-xyz"
      }, 
 
-      "OPENWEATHERMAP_ID": {
-        "description": "Get your own API from https://api.openweathermap.org/data/2.5/weather",
+      "API_OPENWEATHER": {
+        "description": "Get your own APPID from https://api.openweathermap.org/data/2.5/weather",
         "value": "",
         "required": false
       },
@@ -126,17 +136,12 @@
          "required": false,
          "value": ""
      },
-      "ERROR_LOG": {
-         "description": "ID of log for show error.",
-         "required": false,
-         "value": ""
-     },
         "ARQ_API": {
             "description": "Get this from @ARQRobot.",
             "required": true
         },
 
-      "SPAMWATCH_API": {
+      "sw_api": {
          "description": "Spamwatch API Token, Get one from @SpamWatchBot.",
          "required": false,
          "value": ""

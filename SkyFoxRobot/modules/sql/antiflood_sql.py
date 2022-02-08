@@ -1,6 +1,7 @@
 import threading
 
-from sqlalchemy import String, Column, Integer, BigInteger, UnicodeText
+from sqlalchemy import String, Column, Integer, UnicodeText
+from sqlalchemy.sql.sqltypes import BigInteger
 
 from SkyFoxRobot.modules.sql import SESSION, BASE
 

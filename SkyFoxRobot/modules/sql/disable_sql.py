@@ -1,9 +1,7 @@
-
 import threading
 
-from sqlalchemy import Column, String, UnicodeText, distinct, func
-
 from SkyFoxRobot.modules.sql import BASE, SESSION
+from sqlalchemy import Column, String, UnicodeText, distinct, func
 
 
 class Disable(BASE):

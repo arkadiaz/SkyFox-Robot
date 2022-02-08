@@ -1,16 +1,18 @@
-import SkyFoxRobot.modules.sql.locks_sql as sql
 import html
 import ast
+
+from alphabet_detector import AlphabetDetector
 
 from telegram import Message, Chat, ParseMode, MessageEntity
 from telegram import TelegramError, ChatPermissions
 from telegram.error import BadRequest
-from telegram.ext import CommandHandler, MessageHandler, Filters
-from telegram.ext.dispatcher import run_async
+from telegram.ext import Filters
 from telegram.utils.helpers import mention_html
-from alphabet_detector import AlphabetDetector
-from SkyFoxRobot import dispatcher, DRAGONS, LOGGER
-from SkyFoxRobot.modules.disable import DisableAbleCommandHandler
+
+import SkyFoxRobot.modules.sql.locks_sql as sql
+from SkyFoxRobot.modules.helper_funcs.decorators import SkyFoxcmd, SkyFoxmsg
+from SkyFoxRobot.modules.sql.approve_sql import is_approved
+from SkyFoxRobot import DRAGONS, LOGGER as log, dispatcher
 from SkyFoxRobot.modules.helper_funcs.chat_status import (
     can_delete,
     is_user_admin,
@@ -18,7 +20,6 @@ from SkyFoxRobot.modules.helper_funcs.chat_status import (
     is_bot_admin,
     user_admin,
 )
-from SkyFoxRobot.modules.sql.approve_sql import is_approved
 from SkyFoxRobot.modules.log_channel import loggable
 from SkyFoxRobot.modules.connection import connected
 from SkyFoxRobot.modules.helper_funcs.alternate import send_message, typing_action
@@ -88,8 +89,8 @@ UNLOCK_CHAT_RESTRICTION = {
     "pin": {"can_pin_messages": True},
 }
 
-PERM_GROUP = 1
-REST_GROUP = 2
+PERM_GROUP = -8
+REST_GROUP = -12
 
 
 # NOT ASYNC
@@ -128,19 +129,21 @@ def unrestr_members(
             pass
 
 
+@SkyFoxcmd(command="locktypes")
 def locktypes(update, context):
     update.effective_message.reply_text(
-        "\n × ".join(
+        "\n • ".join(
             ["Locks available: "]
             + sorted(list(LOCK_TYPES) + list(LOCK_CHAT_RESTRICTION))
         )
     )
 
 
+@SkyFoxcmd(command="lock", pass_args=True)
 @user_admin
 @loggable
 @typing_action
-def lock(update, context) -> str:
+def lock(update, context) -> str:  # sourcery no-metrics
     args = context.args
     chat = update.effective_chat
     user = update.effective_user
@@ -242,10 +245,11 @@ def lock(update, context) -> str:
     return ""
 
 
+@SkyFoxcmd(command="unlock", pass_args=True)
 @user_admin
 @loggable
 @typing_action
-def unlock(update, context) -> str:
+def unlock(update, context) -> str:  # sourcery no-metrics
     args = context.args
     chat = update.effective_chat
     user = update.effective_user
@@ -337,33 +341,34 @@ def unlock(update, context) -> str:
     return ""
 
 
+@SkyFoxmsg((Filters.all & Filters.chat_type.groups), group=PERM_GROUP)
 @user_not_admin
-def del_lockables(update, context):
+def del_lockables(update, context):  # sourcery no-metrics
     chat = update.effective_chat  # type: Optional[Chat]
-    user = update.effective_user
     message = update.effective_message  # type: Optional[Message]
+    user = update.effective_user
     if is_approved(chat.id, user.id):
         return
     for lockable, filter in LOCK_TYPES.items():
         if lockable == "rtl":
             if sql.is_locked(chat.id, lockable) and can_delete(chat, context.bot.id):
                 if message.caption:
-                    check = ad.detect_alphabet("{}".format(message.caption))
+                    check = ad.detect_alphabet(u"{}".format(message.caption))
                     if "ARABIC" in check:
                         try:
                             message.delete()
                         except BadRequest as excp:
                             if excp.message != "Message to delete not found":
-                                LOGGER.exception("ERROR in lockables")
+                                log.exception("ERROR in lockables")
                         break
                 if message.text:
-                    check = ad.detect_alphabet("{}".format(message.text))
+                    check = ad.detect_alphabet(u"{}".format(message.text))
                     if "ARABIC" in check:
                         try:
                             message.delete()
                         except BadRequest as excp:
                             if excp.message != "Message to delete not found":
-                                LOGGER.exception("ERROR in lockables")
+                                log.exception("ERROR in lockables")
                         break
             continue
         if lockable == "button":
@@ -377,7 +382,7 @@ def del_lockables(update, context):
                     message.delete()
                 except BadRequest as excp:
                     if excp.message != "Message to delete not found":
-                        LOGGER.exception("ERROR in lockables")
+                        log.exception("ERROR in lockables")
                 break
             continue
         if lockable == "inline":
@@ -391,7 +396,7 @@ def del_lockables(update, context):
                     message.delete()
                 except BadRequest as excp:
                     if excp.message != "Message to delete not found":
-                        LOGGER.exception("ERROR in lockables")
+                        log.exception("ERROR in lockables")
                 break
             continue
         if (
@@ -422,7 +427,7 @@ def del_lockables(update, context):
                     message.delete()
                 except BadRequest as excp:
                     if excp.message != "Message to delete not found":
-                        LOGGER.exception("ERROR in lockables")
+                        log.exception("ERROR in lockables")
 
                 break
 
@@ -466,13 +471,14 @@ def build_lock_message(chat_id):
         locklist.sort()
         # Building lock list string
         for x in locklist:
-            res += "\n × {}".format(x)
+            res += "\n • {}".format(x)
     res += "\n\n*" + "These are the current chat permissions:" + "*"
     for x in permslist:
-        res += "\n × {}".format(x)
+        res += "\n • {}".format(x)
     return res
 
 
+@SkyFoxcmd(command="locks")
 @user_admin
 @typing_action
 def list_locks(update, context):
@@ -531,7 +537,7 @@ def __migrate__(old_chat_id, new_chat_id):
     sql.migrate_chat(old_chat_id, new_chat_id)
 
 
-def __chat_settings__(chat_id, user_id):
+def __chat_settings__(chat_id, _):
     return build_lock_message(chat_id)
 
 
@@ -559,27 +565,5 @@ Locking bots will stop non-admins from adding bots to the chat.
 ❂ Unlocking permission *pin* will allow members (non-admins) to pinned a message in a group
 """
 
+
 __mod_name__ = "Locks"
-
-LOCKTYPES_HANDLER = DisableAbleCommandHandler("locktypes", locktypes, run_async=True)
-LOCK_HANDLER = CommandHandler(
-    "lock", lock, pass_args=True, run_async=True
-)  # , filters=Filters.chat_type.groups)
-UNLOCK_HANDLER = CommandHandler(
-    "unlock", unlock, pass_args=True, run_async=True
-)  # , filters=Filters.chat_type.groups)
-LOCKED_HANDLER = CommandHandler(
-    "locks", list_locks, run_async=True
-)  # , filters=Filters.chat_type.groups)
-
-dispatcher.add_handler(LOCK_HANDLER)
-dispatcher.add_handler(UNLOCK_HANDLER)
-dispatcher.add_handler(LOCKTYPES_HANDLER)
-dispatcher.add_handler(LOCKED_HANDLER)
-
-dispatcher.add_handler(
-    MessageHandler(
-        Filters.all & Filters.chat_type.groups, del_lockables, run_async=True
-    ),
-    PERM_GROUP,
-)

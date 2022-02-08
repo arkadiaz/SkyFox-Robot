@@ -1,5 +1,5 @@
 import html
-from typing import Optional
+from typing import Optional, List
 import re
 
 from telegram import Message, Chat, Update, User, ChatPermissions
@@ -397,6 +397,7 @@ def __chat_settings__(chat_id, user_id):
         return "Not enforcing to flood control."
     return "Antiflood has been set to`{}`.".format(limit)
 
+
 __mod_name__ = "Anti-Flood"
 
 FLOOD_BAN_HANDLER = MessageHandler(
@@ -405,7 +406,7 @@ FLOOD_BAN_HANDLER = MessageHandler(
     run_async=True,
 )
 SET_FLOOD_HANDLER = CommandHandler(
-    "setflood", set_flood, filters=Filters.chat_type.groups, run_async=True
+    "setflood", set_flood, filters=Filters.chat_type.group, run_async=True
 )
 SET_FLOOD_MODE_HANDLER = CommandHandler(
     "setfloodmode",

@@ -4,9 +4,8 @@ from typing import Union
 
 from SkyFoxRobot.modules.helper_funcs.msg_types import Types
 from SkyFoxRobot.modules.sql import BASE, SESSION
-from sqlalchemy import Boolean, Column, String, UnicodeText, Integer
+from sqlalchemy import Boolean, Column, Integer, String, UnicodeText
 from sqlalchemy.sql.sqltypes import BigInteger
-
 
 DEFAULT_WELCOME_MESSAGES = [
     "{first} is here!",  # Discord welcome messages copied
@@ -240,7 +239,7 @@ class Welcome(BASE):
     custom_leave = Column(UnicodeText, default=random.choice(DEFAULT_GOODBYE_MESSAGES))
     leave_type = Column(Integer, default=Types.TEXT.value)
 
-    clean_welcome = Column(Integer)
+    clean_welcome = Column(BigInteger)
 
     def __init__(self, chat_id, should_welcome=True, should_goodbye=True):
         self.chat_id = chat_id

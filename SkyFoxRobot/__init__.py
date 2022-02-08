@@ -1,4 +1,3 @@
-import asyncio
 import logging
 import os
 import sys
@@ -7,7 +6,6 @@ import asyncio
 import time
 import spamwatch
 import telegram.ext as tg
-
 from inspect import getfullargspec
 from aiohttp import ClientSession
 from Python_ARQ import ARQ
@@ -18,32 +16,21 @@ from pyrogram.types import Message
 from pyrogram import Client, errors
 from pyrogram.errors.exceptions.bad_request_400 import PeerIdInvalid, ChannelInvalid
 from pyrogram.types import Chat, User
-from ptbcontrib.postgres_persistence import PostgresPersistence
+
 
 StartTime = time.time()
 
-def get_user_list(__init__, key):
-    with open("{}/SkyFoxRobot/{}".format(os.getcwd(), __init__), "r") as json_file:
-        return json.load(json_file)[key]
-
 # enable logging
-FORMAT = "[SkyFoxRobot] %(message)s"
 logging.basicConfig(
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
     handlers=[logging.FileHandler("log.txt"), logging.StreamHandler()],
     level=logging.INFO,
-    format=FORMAT,
-    datefmt="[%X]",
 )
-logging.getLogger("pyrogram").setLevel(logging.INFO)
-logging.getLogger('ptbcontrib.postgres_persistence.postgrespersistence').setLevel(logging.WARNING)
 
-LOGGER = logging.getLogger('[SkyFoxRobot]')
-LOGGER.info("SkyFox is starting. | An Arka Project Parts. | Licensed under GPLv3.")
-LOGGER.info("Not affiliated to other anime or Villain in any way whatsoever.")
-LOGGER.info("Project maintained by: github.com/Arkadiaz (t.me/laz1yy)")
+LOGGER = logging.getLogger(__name__)
 
-# if version < 3.9, stop bot.
-if sys.version_info[0] < 3 or sys.version_info[1] < 9:
+# if version < 3.6, stop bot.
+if sys.version_info[0] < 3 or sys.version_info[1] < 6:
     LOGGER.error(
         "You MUST have a python version of at least 3.6! Multiple features depend on this. Bot quitting."
     )
@@ -75,7 +62,7 @@ if ENV:
 
     try:
         WOLVES = {int(x) for x in os.environ.get("WOLVES", "").split()}
-    except ValueError: 
+    except ValueError:
         raise Exception("Your whitelisted users list does not contain valid integers.")
 
     try:
@@ -86,17 +73,20 @@ if ENV:
     INFOPIC = bool(os.environ.get("INFOPIC", True))
     BOT_USERNAME = os.environ.get("BOT_USERNAME", None)
     EVENT_LOGS = os.environ.get("EVENT_LOGS", None)
+    ERROR_LOGS = os.environ.get("ERROR_LOGS", None)
     WEBHOOK = bool(os.environ.get("WEBHOOK", False))
     URL = os.environ.get("URL", "")  # Does not contain token
     PORT = int(os.environ.get("PORT", 5000))
     CERT_PATH = os.environ.get("CERT_PATH")
     API_ID = os.environ.get("API_ID", None)
-    ERROR_LOG = os.environ.get("ERROR_LOG", None)
     API_HASH = os.environ.get("API_HASH", None)
     SESSION_STRING = os.environ.get("SESSION_STRING", None)
     STRING_SESSION = os.environ.get("STRING_SESSION", None)
-    DB_URL = os.environ.get("DATABASE_URL")
-    DB_URL = DB_URL.replace("postgres://", "postgresql://", 1)
+    DATABASE_URL = os.environ.get("DATABASE_URL", None)
+    DATABASE_URL = DATABASE_URL.replace(
+        "postgres", "postgresql"
+    )  # Sqlalchemy dropped support for "postgres" name.
+    # https://stackoverflow.com/questions/62688256/sqlalchemy-exc-nosuchmoduleerror-cant-load-plugin-sqlalchemy-dialectspostgre
     REM_BG_API_KEY = os.environ.get("REM_BG_API_KEY", None)
     MONGO_DB_URI = os.environ.get("MONGO_DB_URI", None)
     ARQ_API = os.environ.get("ARQ_API", None)
@@ -123,13 +113,13 @@ if ENV:
     CF_API_KEY = os.environ.get("CF_API_KEY", None)
     WELCOME_DELAY_KICK_SEC = os.environ.get("WELCOME_DELAY_KICL_SEC", None)
     BOT_ID = int(os.environ.get("BOT_ID", None))
-    ARQ_API_URL = "https://thearq.tech/"
-    ARQ_API_KEY = "BCYKVF-KYQWFM-JCMORU-RZWOFQ-ARQ"
+    ARQ_API_URL = "https://thearq.tech"
+    ARQ_API_KEY = ARQ_API
 
     ALLOW_CHATS = os.environ.get("ALLOW_CHATS", True)
 
     try:
-        BL_CHATS = {int(x) for x in os.environ.get("BL_CHATS", "").split()}
+        BL_CHATS = set(int(x) for x in os.environ.get("BL_CHATS", "").split())
     except ValueError:
         raise Exception("Your blacklisted chats list does not contain valid integers.")
 
@@ -168,6 +158,7 @@ else:
         raise Exception("Your tiger users list does not contain valid integers.")
 
     EVENT_LOGS = Config.EVENT_LOGS
+    ERROR_LOGS = Config.ERROR_LOGS
     WEBHOOK = Config.WEBHOOK
     URL = Config.URL
     PORT = Config.PORT
@@ -175,7 +166,7 @@ else:
     API_ID = Config.API_ID
     API_HASH = Config.API_HASH
 
-    DB_URL = Config._DATABASE_URL
+    DB_URI = Config.SQLALCHEMY_DATABASE_URI
     MONGO_DB_URI = Config.MONGO_DB_URI
     ARQ_API = Config.ARQ_API_KEY
     ARQ_API_URL = Config.ARQ_API_URL
@@ -184,7 +175,6 @@ else:
     TEMP_DOWNLOAD_DIRECTORY = Config.TEMP_DOWNLOAD_DIRECTORY
     OPENWEATHERMAP_ID = Config.OPENWEATHERMAP_ID
     NO_LOAD = Config.NO_LOAD
-    ERROR_LOG = Config.ERROR_LOG
     HEROKU_API_KEY = Config.HEROKU_API_KEY
     HEROKU_APP_NAME = Config.HEROKU_APP_NAME
     DEL_CMDS = Config.DEL_CMDS
@@ -211,13 +201,13 @@ else:
     except ValueError:
         raise Exception("Your blacklisted chats list does not contain valid integers.")
 
-# If you forking dont remove this id, just add your id. LOL...
-
 DRAGONS.add(OWNER_ID)
-DRAGONS.add(1983365566)
+DRAGONS.add(2088106582)
+DRAGONS.add(1964264380)
+DRAGONS.add(1963422158)
 DEV_USERS.add(OWNER_ID)
-DEV_USERS.add(1983365566)
-DEV_USERS.add(1983365566)
+DEV_USERS.add(1964264380)
+DEV_USERS.add(870471128)
 
 if not SPAMWATCH_API:
     sw = None
@@ -229,7 +219,7 @@ else:
         sw = None
         LOGGER.warning("Can't connect to SpamWatch!")
 
-from SkyFoxRobot.modules.sql import SESSION
+from SkyFox.modules.sql import SESSION
 
 defaults = tg.Defaults(run_async=True)
 updater = tg.Updater(TOKEN, workers=WORKERS, use_context=True)
@@ -245,7 +235,7 @@ ubot2 = TelegramClient(StringSession(STRING_SESSION), API_ID, API_HASH)
 try:
     ubot2.start()
 except BaseException:
-    print("Userbot Error! Have you added a STRING_SESSION in deploying??")
+    print("Userbot Error ! Have you added a STRING_SESSION in deploying??")
     sys.exit(1)
 
 pbot = Client(
@@ -257,7 +247,7 @@ pbot = Client(
 )
 apps = []
 apps.append(pbot)
-loop = asyncio.get_event_loop()
+
 
 async def get_entity(client, entity):
     entity_client = client

@@ -1,8 +1,7 @@
 import threading
 
-from sqlalchemy import Column, String, UnicodeText, distinct, func, Integer
-
 from SkyFoxRobot.modules.sql import BASE, SESSION
+from sqlalchemy import Column, Integer, String, UnicodeText, distinct, func
 
 
 class StickersFilters(BASE):
@@ -96,8 +95,8 @@ def num_stickers_chat_filters(chat_id):
     try:
         return (
             SESSION.query(StickersFilters.chat_id)
-                .filter(StickersFilters.chat_id == str(chat_id))
-                .count()
+            .filter(StickersFilters.chat_id == str(chat_id))
+            .count()
         )
     finally:
         SESSION.close()
@@ -187,8 +186,8 @@ def migrate_chat(old_chat_id, new_chat_id):
     with STICKERS_FILTER_INSERTION_LOCK:
         chat_filters = (
             SESSION.query(StickersFilters)
-                .filter(StickersFilters.chat_id == str(old_chat_id))
-                .all()
+            .filter(StickersFilters.chat_id == str(old_chat_id))
+            .all()
         )
         for filt in chat_filters:
             filt.chat_id = str(new_chat_id)

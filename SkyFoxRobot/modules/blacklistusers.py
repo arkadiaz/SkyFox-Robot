@@ -9,7 +9,7 @@ from SkyFoxRobot import (
     TIGERS,
     WOLVES,
     dispatcher,
-) 
+)
 from SkyFoxRobot.modules.helper_funcs.chat_status import dev_plus
 from SkyFoxRobot.modules.helper_funcs.extraction import (
     extract_user,
