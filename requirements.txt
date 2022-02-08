@@ -25,7 +25,7 @@ aiohttp>=2.2.5
 Pillow
 CurrencyConverter
 googletrans==4.0.0-rc1
-google-trans-new==1.1.9
+google-trans-new
 jikanpy
 speedtest-cli
 coffeehouse==2.2.6
@@ -47,7 +47,7 @@ TgCrypto
 Pyrogram
 PyDictionary
 yt-dlp
-youtube_search_python==1.6.1
+youtube_search_python==1.4.9
 youtube_search
 lyrics_extractor
 asyncio
