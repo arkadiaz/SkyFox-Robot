@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://telegra.ph/file/56811b69cbcece20bbebf.jpg">
+  <img src="https://telegra.ph/file/281fbf2e19c36b34d4f40.jpg">
 </p>
 
 <h4><p align="center"> SKYFOX ROBOT </p></h4>
