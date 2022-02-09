@@ -29,4 +29,5 @@ This Bot is Created by Arka, If your kanging this without fork at least give a c
 - Shinobi Kenzhu
 ```
 ### Thanks To
-[kenzu] (https://github.com/Kenzuuu)
+*   [Lepin](https://github.com/Yansensad)
+*   [kenzu](https://github.com/kenzuuu)
