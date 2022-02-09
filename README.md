@@ -24,5 +24,9 @@
 ```
 This Bot is Created by Arka, If your kanging this without fork at least give a credit to get a smile of my hard work. 
 - SkyFox Robot
+- Skyzu Robot
+- Yansen Robot
+- Shinobi Kenzhu
 ```
 ### Thanks To
+[kenzu] (https://github.com/Kenzuuu)
