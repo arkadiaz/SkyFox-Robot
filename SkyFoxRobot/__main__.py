@@ -465,7 +465,9 @@ def SkyFox_about_callback(update, context):
             reply_markup=InlineKeyboardMarkup(
                 [
                     [
-                        InlineKeyboardButton(text="sᴜᴘᴘᴏʀᴛ​", url="t.me/arkabotsupport"),
+                        InlineKeyboardButton(
+                            text="sᴜᴘᴘᴏʀᴛ​", url="t.me/arkabotsupport"
+                        ),
                         InlineKeyboardButton(
                             text="ᴜᴘᴅᴀᴛᴇs​", url="https://t.me/arkabotupdate"
                         ),
