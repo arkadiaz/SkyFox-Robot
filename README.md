@@ -31,3 +31,4 @@ This Bot is Created by Arka, If your kanging this without fork at least give a c
 ### Thanks To
 *   [Lepin](https://github.com/Yansensad)
 *   [kenzu](https://github.com/kenzuuu)
+*   [Skyzu](https://github.com/Skyzu)
